@@ -1,0 +1,573 @@
+openapi: 3.0.3
+info:
+  title: CSV Quiz Upload API
+  description: API for uploading CSV files containing quiz questions and managing the quiz question pool
+  version: 1.0.0
+  contact:
+    name: Quiz App Development Team
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+  - url: https://api.quiz-app.example.com/api
+    description: Production server (placeholder)
+
+tags:
+  - name: Upload
+    description: CSV file upload operations
+  - name: Questions
+    description: Question management and retrieval
+
+paths:
+  /upload:
+    post:
+      summary: Upload CSV file with quiz questions
+      description: |
+        Accepts a CSV file upload, validates format and content, imports valid questions,
+        and returns detailed results including successfully imported questions and any errors.
+        
+        **CSV Format**: Must have header row: `question,answer_a,answer_b,answer_c,answer_d,correct`
+        
+        **Behavior**:
+        - Validates file size (max 2MB)
+        - Validates CSV format and headers
+        - Checks for duplicate questions (exact match on question text)
+        - Supports partial imports (imports valid rows, reports errors for invalid rows)
+        - Returns detailed report with success count and error details
+      operationId: uploadCSV
+      tags:
+        - Upload
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: CSV file containing quiz questions (max 2MB)
+            examples:
+              validUpload:
+                summary: Valid CSV file upload
+                description: Example of uploading a properly formatted CSV file
+      responses:
+        '200':
+          description: CSV processed successfully (may include partial success with errors)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+              examples:
+                allSuccess:
+                  summary: All questions imported successfully
+                  value:
+                    uploadId: 1
+                    filename: "quiz-questions.csv"
+                    totalRows: 10
+                    successfulImports: 10
+                    failedImports: 0
+                    duplicateCount: 0
+                    errors: []
+                    message: "Successfully imported 10 questions"
+                partialSuccess:
+                  summary: Partial import with validation errors
+                  value:
+                    uploadId: 2
+                    filename: "mixed-quality.csv"
+                    totalRows: 8
+                    successfulImports: 5
+                    failedImports: 2
+                    duplicateCount: 1
+                    errors:
+                      - row: 3
+                        error: "Invalid correct answer designation 'e' - must be a, b, c, or d"
+                      - row: 5
+                        error: "Missing answer_c column"
+                      - row: 7
+                        error: "Duplicate question: 'What is the capital of France?'"
+                    message: "Imported 5 questions. 3 questions had errors (2 validation errors, 1 duplicate)"
+        '400':
+          description: Bad request - invalid file or format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                fileTooLarge:
+                  summary: File exceeds size limit
+                  value:
+                    error: "File size exceeds maximum limit of 2MB"
+                    code: "FILE_TOO_LARGE"
+                invalidFormat:
+                  summary: Invalid CSV format
+                  value:
+                    error: "Invalid CSV format - missing required header columns"
+                    code: "INVALID_CSV_FORMAT"
+                    details:
+                      missingColumns: ["answer_d", "correct"]
+                noFile:
+                  summary: No file provided
+                  value:
+                    error: "No file uploaded"
+                    code: "NO_FILE"
+                wrongFileType:
+                  summary: Non-CSV file uploaded
+                  value:
+                    error: "Invalid file type - only CSV files are accepted"
+                    code: "INVALID_FILE_TYPE"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                serverError:
+                  summary: Unexpected server error
+                  value:
+                    error: "An unexpected error occurred while processing the file"
+                    code: "INTERNAL_ERROR"
+
+  /questions:
+    get:
+      summary: List all questions
+      description: |
+        Retrieves all questions from the global question pool with their answer options.
+        Questions are returned in reverse chronological order (newest first).
+      operationId: listQuestions
+      tags:
+        - Questions
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of questions to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        - name: offset
+          in: query
+          description: Number of questions to skip (for pagination)
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: List of questions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - questions
+                  - total
+                  - limit
+                  - offset
+                properties:
+                  questions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Question'
+                  total:
+                    type: integer
+                    description: Total number of questions in the database
+                    example: 150
+                  limit:
+                    type: integer
+                    description: Maximum questions returned in this response
+                    example: 100
+                  offset:
+                    type: integer
+                    description: Number of questions skipped
+                    example: 0
+              examples:
+                questionList:
+                  summary: Example question list
+                  value:
+                    total: 150
+                    limit: 100
+                    offset: 0
+                    questions:
+                      - id: 1
+                        questionText: "What is the capital of France?"
+                        answers:
+                          - id: 1
+                            optionLabel: "a"
+                            answerText: "London"
+                            isCorrect: false
+                          - id: 2
+                            optionLabel: "b"
+                            answerText: "Paris"
+                            isCorrect: true
+                          - id: 3
+                            optionLabel: "c"
+                            answerText: "Berlin"
+                            isCorrect: false
+                          - id: 4
+                            optionLabel: "d"
+                            answerText: "Madrid"
+                            isCorrect: false
+                        createdAt: "2026-02-04T10:30:00Z"
+                      - id: 2
+                        questionText: "What is 2 + 2?"
+                        answers:
+                          - id: 5
+                            optionLabel: "a"
+                            answerText: "3"
+                            isCorrect: false
+                          - id: 6
+                            optionLabel: "b"
+                            answerText: "4"
+                            isCorrect: true
+                          - id: 7
+                            optionLabel: "c"
+                            answerText: "5"
+                            isCorrect: false
+                          - id: 8
+                            optionLabel: "d"
+                            answerText: "6"
+                            isCorrect: false
+                        createdAt: "2026-02-04T10:25:00Z"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /questions/{id}:
+    get:
+      summary: Get a specific question
+      description: Retrieves a single question by ID with all its answer options
+      operationId: getQuestion
+      tags:
+        - Questions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Question ID
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Question retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+              examples:
+                sampleQuestion:
+                  summary: Example question
+                  value:
+                    id: 1
+                    questionText: "What is the capital of France?"
+                    answers:
+                      - id: 1
+                        optionLabel: "a"
+                        answerText: "London"
+                        isCorrect: false
+                      - id: 2
+                        optionLabel: "b"
+                        answerText: "Paris"
+                        isCorrect: true
+                      - id: 3
+                        optionLabel: "c"
+                        answerText: "Berlin"
+                        isCorrect: false
+                      - id: 4
+                        optionLabel: "d"
+                        answerText: "Madrid"
+                        isCorrect: false
+                    createdAt: "2026-02-04T10:30:00Z"
+        '404':
+          description: Question not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                notFound:
+                  summary: Question does not exist
+                  value:
+                    error: "Question not found"
+                    code: "QUESTION_NOT_FOUND"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /uploads:
+    get:
+      summary: List upload history
+      description: Retrieves a history of CSV upload operations with their results
+      operationId: listUploads
+      tags:
+        - Upload
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of uploads to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Upload history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - uploads
+                properties:
+                  uploads:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UploadHistory'
+              examples:
+                uploadHistory:
+                  summary: Example upload history
+                  value:
+                    uploads:
+                      - id: 2
+                        filename: "quiz-set-2.csv"
+                        fileSize: 15240
+                        totalRows: 10
+                        successfulImports: 8
+                        failedImports: 1
+                        duplicateCount: 1
+                        status: "completed"
+                        uploadedAt: "2026-02-04T11:00:00Z"
+                        completedAt: "2026-02-04T11:00:03Z"
+                      - id: 1
+                        filename: "initial-questions.csv"
+                        fileSize: 8920
+                        totalRows: 5
+                        successfulImports: 5
+                        failedImports: 0
+                        duplicateCount: 0
+                        status: "completed"
+                        uploadedAt: "2026-02-04T10:30:00Z"
+                        completedAt: "2026-02-04T10:30:01Z"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Question:
+      type: object
+      required:
+        - id
+        - questionText
+        - answers
+        - createdAt
+      properties:
+        id:
+          type: integer
+          description: Unique question identifier
+          example: 1
+        questionText:
+          type: string
+          description: The question text
+          minLength: 1
+          maxLength: 2000
+          example: "What is the capital of France?"
+        answers:
+          type: array
+          description: Array of exactly 4 answer options (a, b, c, d)
+          minItems: 4
+          maxItems: 4
+          items:
+            $ref: '#/components/schemas/AnswerOption'
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when question was created
+          example: "2026-02-04T10:30:00Z"
+
+    AnswerOption:
+      type: object
+      required:
+        - id
+        - optionLabel
+        - answerText
+        - isCorrect
+      properties:
+        id:
+          type: integer
+          description: Unique answer identifier
+          example: 1
+        optionLabel:
+          type: string
+          enum: [a, b, c, d]
+          description: Answer option label
+          example: "b"
+        answerText:
+          type: string
+          description: The answer text
+          minLength: 1
+          maxLength: 500
+          example: "Paris"
+        isCorrect:
+          type: boolean
+          description: Whether this is the correct answer
+          example: true
+
+    UploadResponse:
+      type: object
+      required:
+        - uploadId
+        - filename
+        - totalRows
+        - successfulImports
+        - failedImports
+        - duplicateCount
+        - errors
+        - message
+      properties:
+        uploadId:
+          type: integer
+          description: Unique identifier for this upload operation
+          example: 1
+        filename:
+          type: string
+          description: Original filename of the uploaded CSV
+          example: "quiz-questions.csv"
+        totalRows:
+          type: integer
+          description: Total number of data rows in the CSV (excluding header)
+          example: 10
+        successfulImports:
+          type: integer
+          description: Number of questions successfully imported
+          example: 8
+        failedImports:
+          type: integer
+          description: Number of questions that failed validation
+          example: 1
+        duplicateCount:
+          type: integer
+          description: Number of duplicate questions rejected
+          example: 1
+        errors:
+          type: array
+          description: List of validation errors with row numbers
+          items:
+            $ref: '#/components/schemas/ValidationError'
+        message:
+          type: string
+          description: Human-readable summary of upload results
+          example: "Imported 8 questions. 2 questions had errors (1 validation error, 1 duplicate)"
+
+    ValidationError:
+      type: object
+      required:
+        - row
+        - error
+      properties:
+        row:
+          type: integer
+          description: Row number in CSV where error occurred (1-indexed, excluding header)
+          example: 5
+        error:
+          type: string
+          description: Description of the validation error
+          example: "Invalid correct answer designation 'e' - must be a, b, c, or d"
+
+    UploadHistory:
+      type: object
+      required:
+        - id
+        - filename
+        - fileSize
+        - totalRows
+        - successfulImports
+        - failedImports
+        - duplicateCount
+        - status
+        - uploadedAt
+      properties:
+        id:
+          type: integer
+          description: Upload record ID
+          example: 1
+        filename:
+          type: string
+          description: Original filename
+          example: "quiz-questions.csv"
+        fileSize:
+          type: integer
+          description: File size in bytes
+          example: 15240
+        totalRows:
+          type: integer
+          description: Total rows processed
+          example: 10
+        successfulImports:
+          type: integer
+          description: Successfully imported questions
+          example: 9
+        failedImports:
+          type: integer
+          description: Failed question imports
+          example: 1
+        duplicateCount:
+          type: integer
+          description: Duplicate questions rejected
+          example: 0
+        status:
+          type: string
+          enum: [processing, completed, failed]
+          description: Upload processing status
+          example: "completed"
+        uploadedAt:
+          type: string
+          format: date-time
+          description: When upload started
+          example: "2026-02-04T10:30:00Z"
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: When processing completed
+          example: "2026-02-04T10:30:02Z"
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - code
+      properties:
+        error:
+          type: string
+          description: Human-readable error message
+          example: "File size exceeds maximum limit of 2MB"
+        code:
+          type: string
+          description: Machine-readable error code
+          example: "FILE_TOO_LARGE"
+        details:
+          type: object
+          description: Additional error context (optional)
+          additionalProperties: true
+
+  securitySchemes: {}
