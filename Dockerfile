@@ -3,35 +3,37 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy root files
-COPY package*.json ./
-
 # Copy frontend and backend directories
 COPY frontend ./frontend
 COPY backend ./backend
 
-# Install backend dependencies
+# Install backend dependencies and build
 WORKDIR /app/backend
-RUN npm install
+RUN npm install && \
+    chmod +x node_modules/.bin/* && \
+    npx prisma generate && \
+    npx tsc
 
 # Install frontend dependencies and build
 WORKDIR /app/frontend
-RUN npm install
-RUN npm run build
+RUN npm install && \
+    chmod +x node_modules/.bin/* && \
+    npm run build
 
 # Runtime stage
 FROM node:20-alpine
+
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 
 # Copy backend package files
 COPY backend/package*.json ./backend/
 
-# Copy backend source and built frontend
-COPY backend/src ./backend/src
+# Copy backend source, prisma schema, and built files
+COPY --from=builder /app/backend/dist ./backend/dist
 COPY backend/prisma ./backend/prisma
-COPY backend/tsconfig.json ./backend/
-COPY backend/dist ./backend/dist
 COPY --from=builder /app/frontend/dist ./frontend/dist
 
 # Install production dependencies only
