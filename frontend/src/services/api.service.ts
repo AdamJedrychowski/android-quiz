@@ -1,8 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import { UploadResponse, QuestionsResponse, Question } from '../types';
 
-// API base URL configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+// API base URL - use relative URL for same-origin requests
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 // Create axios instance with default config
 const apiClient: AxiosInstance = axios.create({

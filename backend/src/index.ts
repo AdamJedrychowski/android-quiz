@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import { PrismaClient } from '@prisma/client';
 
 const app = express();
@@ -12,17 +13,26 @@ export const prisma = new PrismaClient();
 app.use(cors());
 app.use(express.json());
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
 // Routes
 import uploadRoutes from './api/upload.routes';
 import questionRoutes from './api/question.routes';
 
 app.use('/api/upload', uploadRoutes);
 app.use('/api/questions', questionRoutes);
+
+// Serve frontend static files (production)
+const frontendBuildPath = path.join(__dirname, '../../frontend/dist');
+app.use(express.static(frontendBuildPath));
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Serve index.html for all non-API routes (SPA routing)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendBuildPath, 'index.html'));
+});
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -37,6 +47,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📊 Database connected`);
+  console.log(`🌐 Frontend served from ${frontendBuildPath}`);
 });
 
 // Graceful shutdown
