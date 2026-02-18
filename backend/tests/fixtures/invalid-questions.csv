@@ -1,0 +1,6 @@
+question,answer_a,answer_b,answer_c,answer_d,correct
+What is the capital of France?,London,Paris,Berlin,Madrid,b
+,Empty question test,Answer B,Answer C,Answer D,a
+Valid question?,Answer A,,Answer C,Answer D,b
+What is 2 + 2?,3,4,5,6,e
+Missing answer test,Answer A,Answer B,Answer C,,d

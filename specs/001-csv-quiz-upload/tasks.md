@@ -26,12 +26,12 @@ Per plan.md, this is a web application with:
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create project directory structure (backend/, frontend/) per plan.md structure
-- [ ] T002 Initialize backend Node.js project with TypeScript, Express, Prisma, csv-parse, multer dependencies in backend/package.json
-- [ ] T003 [P] Initialize frontend Vite+React+TypeScript project with axios, papaparse dependencies in frontend/package.json
-- [ ] T004 [P] Configure backend TypeScript compiler settings in backend/tsconfig.json
-- [ ] T005 [P] Configure frontend Vite build settings in frontend/vite.config.ts
-- [ ] T006 Create .gitignore files for backend/node_modules, frontend/node_modules, backend/dist, frontend/dist
+- [X] T001 Create project directory structure (backend/, frontend/) per plan.md structure
+- [X] T002 Initialize backend Node.js project with TypeScript, Express, Prisma, csv-parse, multer dependencies in backend/package.json
+- [X] T003 [P] Initialize frontend Vite+React+TypeScript project with axios, papaparse dependencies in frontend/package.json
+- [X] T004 [P] Configure backend TypeScript compiler settings in backend/tsconfig.json
+- [X] T005 [P] Configure frontend Vite build settings in frontend/vite.config.ts
+- [X] T006 Create .gitignore files for backend/node_modules, frontend/node_modules, backend/dist, frontend/dist
 
 ---
 
@@ -41,18 +41,18 @@ Per plan.md, this is a web application with:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T007 Initialize Prisma with SQLite provider in backend/prisma/schema.prisma
-- [ ] T008 Define Question entity schema in backend/prisma/schema.prisma per data-model.md
-- [ ] T009 Define AnswerOption entity schema in backend/prisma/schema.prisma per data-model.md
-- [ ] T010 Define CSVUpload entity schema in backend/prisma/schema.prisma per data-model.md
-- [ ] T011 Run Prisma migration to create database schema: npx prisma migrate dev --name init
-- [ ] T012 Generate Prisma Client types: npx prisma generate
-- [ ] T013 Create TypeScript model interfaces in backend/src/models/question.model.ts
-- [ ] T014 [P] Create TypeScript model interfaces in backend/src/models/answer.model.ts
-- [ ] T015 [P] Create TypeScript model interfaces in backend/src/models/upload.model.ts
-- [ ] T016 Setup Express server with CORS middleware in backend/src/index.ts
-- [ ] T017 [P] Configure multer file upload middleware with 2MB limit in backend/src/lib/upload.middleware.ts
-- [ ] T018 [P] Create API service client with base URL configuration in frontend/src/services/api.service.ts
+- [X] T007 Initialize Prisma with SQLite provider in backend/prisma/schema.prisma
+- [X] T008 Define Question entity schema in backend/prisma/schema.prisma per data-model.md
+- [X] T009 Define AnswerOption entity schema in backend/prisma/schema.prisma per data-model.md
+- [X] T010 Define CSVUpload entity schema in backend/prisma/schema.prisma per data-model.md
+- [X] T011 Run Prisma migration to create database schema: npx prisma migrate dev --name init
+- [X] T012 Generate Prisma Client types: npx prisma generate
+- [X] T013 Create TypeScript model interfaces in backend/src/models/question.model.ts
+- [X] T014 [P] Create TypeScript model interfaces in backend/src/models/answer.model.ts
+- [X] T015 [P] Create TypeScript model interfaces in backend/src/models/upload.model.ts
+- [X] T016 Setup Express server with CORS middleware in backend/src/index.ts
+- [X] T017 [P] Configure multer file upload middleware with 2MB limit in backend/src/lib/upload.middleware.ts
+- [X] T018 [P] Create API service client with base URL configuration in frontend/src/services/api.service.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -66,22 +66,22 @@ Per plan.md, this is a web application with:
 
 ### Implementation for User Story 1
 
-- [ ] T019 [P] [US1] Implement CSV parser service with header validation in backend/src/services/csv-parser.service.ts
-- [ ] T020 [P] [US1] Implement CSV row validation logic (answer labels, correct designation) in backend/src/services/csv-parser.service.ts
-- [ ] T021 [US1] Implement question duplicate checking in backend/src/services/question.service.ts
-- [ ] T022 [US1] Implement create question with answers (transaction) in backend/src/services/question.service.ts
-- [ ] T023 [US1] Implement batch question creation with duplicate detection in backend/src/services/question.service.ts
-- [ ] T024 [US1] Implement upload processing orchestration in backend/src/services/upload.service.ts (parse→validate→check duplicates→import)
-- [ ] T025 [US1] Create CSVUpload tracking record with status management in backend/src/services/upload.service.ts
-- [ ] T026 [US1] Implement POST /api/upload endpoint with multer in backend/src/api/upload.routes.ts per contracts/api.yaml
-- [ ] T027 [US1] Add file size validation (2MB limit) in backend/src/api/upload.routes.ts
-- [ ] T028 [US1] Add file type validation (CSV only) in backend/src/api/upload.routes.ts
-- [ ] T029 [US1] Implement upload response formatting with success/error counts in backend/src/api/upload.routes.ts
-- [ ] T030 [US1] Create upload form component with file input in frontend/src/components/UploadForm.tsx
-- [ ] T031 [US1] Implement file selection and upload trigger in frontend/src/components/UploadForm.tsx
-- [ ] T032 [US1] Display upload results (success count, errors with row numbers) in frontend/src/components/UploadForm.tsx
-- [ ] T033 [US1] Create upload page with UploadForm component in frontend/src/pages/Upload.tsx
-- [ ] T034 [US1] Add upload API call to frontend api service in frontend/src/services/api.service.ts
+- [X] T019 [P] [US1] Implement CSV parser service with header validation in backend/src/services/csv-parser.service.ts
+- [X] T020 [P] [US1] Implement CSV row validation logic (answer labels, correct designation) in backend/src/services/csv-parser.service.ts
+- [X] T021 [US1] Implement question duplicate checking in backend/src/services/question.service.ts
+- [X] T022 [US1] Implement create question with answers (transaction) in backend/src/services/question.service.ts
+- [X] T023 [US1] Implement batch question creation with duplicate detection in backend/src/services/question.service.ts
+- [X] T024 [US1] Implement upload processing orchestration in backend/src/services/upload.service.ts (parse→validate→check duplicates→import)
+- [X] T025 [US1] Create CSVUpload tracking record with status management in backend/src/services/upload.service.ts
+- [X] T026 [US1] Implement POST /api/upload endpoint with multer in backend/src/api/upload.routes.ts per contracts/api.yaml
+- [X] T027 [US1] Add file size validation (2MB limit) in backend/src/api/upload.routes.ts
+- [X] T028 [US1] Add file type validation (CSV only) in backend/src/api/upload.routes.ts
+- [X] T029 [US1] Implement upload response formatting with success/error counts in backend/src/api/upload.routes.ts
+- [X] T030 [US1] Create upload form component with file input in frontend/src/components/UploadForm.tsx
+- [X] T031 [US1] Implement file selection and upload trigger in frontend/src/components/UploadForm.tsx
+- [X] T032 [US1] Display upload results (success count, errors with row numbers) in frontend/src/components/UploadForm.tsx
+- [X] T033 [US1] Create upload page with UploadForm component in frontend/src/pages/Upload.tsx
+- [X] T034 [US1] Add upload API call to frontend api service in frontend/src/services/api.service.ts
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - users can upload CSV files and see import results
 
@@ -118,16 +118,16 @@ Per plan.md, this is a web application with:
 
 ### Implementation for User Story 3
 
-- [ ] T045 [P] [US3] Implement GET /api/questions endpoint with pagination in backend/src/api/question.routes.ts per contracts/api.yaml
-- [ ] T046 [P] [US3] Implement GET /api/questions/:id endpoint in backend/src/api/question.routes.ts per contracts/api.yaml
-- [ ] T047 [US3] Implement get all questions with pagination in backend/src/services/question.service.ts
-- [ ] T048 [US3] Implement get single question by ID with answers in backend/src/services/question.service.ts
-- [ ] T049 [US3] Create QuestionList component with question display in frontend/src/components/QuestionList.tsx
-- [ ] T050 [US3] Display answer options with correct answer highlighting in frontend/src/components/QuestionList.tsx
-- [ ] T051 [US3] Add pagination controls to QuestionList in frontend/src/components/QuestionList.tsx
-- [ ] T052 [US3] Create questions page with QuestionList component in frontend/src/pages/Questions.tsx
-- [ ] T053 [US3] Add get questions API call to frontend api service in frontend/src/services/api.service.ts
-- [ ] T054 [US3] Create basic navigation between Upload and Questions pages in frontend/src/App.tsx
+- [X] T045 [P] [US3] Implement GET /api/questions endpoint with pagination in backend/src/api/question.routes.ts per contracts/api.yaml
+- [X] T046 [P] [US3] Implement GET /api/questions/:id endpoint in backend/src/api/question.routes.ts per contracts/api.yaml
+- [X] T047 [US3] Implement get all questions with pagination in backend/src/services/question.service.ts
+- [X] T048 [US3] Implement get single question by ID with answers in backend/src/services/question.service.ts
+- [X] T049 [US3] Create QuestionList component with question display in frontend/src/components/QuestionList.tsx
+- [X] T050 [US3] Display answer options with correct answer highlighting in frontend/src/components/QuestionList.tsx
+- [X] T051 [US3] Add pagination controls to QuestionList in frontend/src/components/QuestionList.tsx
+- [X] T052 [US3] Create questions page with QuestionList component in frontend/src/pages/Questions.tsx
+- [X] T053 [US3] Add get questions API call to frontend api service in frontend/src/services/api.service.ts
+- [X] T054 [US3] Create basic navigation between Upload and Questions pages in frontend/src/App.tsx
 
 **Checkpoint**: All user stories should now be independently functional - complete upload and review workflow
 
@@ -137,14 +137,14 @@ Per plan.md, this is a web application with:
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T055 [P] Add GET /api/uploads endpoint for upload history in backend/src/api/upload.routes.ts per contracts/api.yaml
-- [ ] T056 [P] Create sample CSV files for testing in backend/tests/fixtures/
-- [ ] T057 [P] Add environment variable configuration in backend/.env.example
-- [ ] T058 [P] Add environment variable configuration in frontend/.env.example
-- [ ] T059 Add error handling for database connection failures in backend/src/index.ts
-- [ ] T060 [P] Add loading states to frontend components in frontend/src/components/
-- [ ] T061 [P] Add basic styling/CSS to frontend components in frontend/src/
-- [ ] T062 Create README.md with setup and run instructions per quickstart.md
+- [X] T055 [P] Add GET /api/uploads endpoint for upload history in backend/src/api/upload.routes.ts per contracts/api.yaml
+- [X] T056 [P] Create sample CSV files for testing in backend/tests/fixtures/
+- [X] T057 [P] Add environment variable configuration in backend/.env.example
+- [X] T058 [P] Add environment variable configuration in frontend/.env.example
+- [X] T059 Add error handling for database connection failures in backend/src/index.ts
+- [X] T060 [P] Add loading states to frontend components in frontend/src/components/
+- [X] T061 [P] Add basic styling/CSS to frontend components in frontend/src/
+- [X] T062 Create README.md with setup and run instructions per quickstart.md
 - [ ] T063 Verify all endpoints match contracts/api.yaml specification
 - [ ] T064 Verify CSV parsing matches contracts/csv-format.md specification
 - [ ] T065 Run through quickstart.md validation steps

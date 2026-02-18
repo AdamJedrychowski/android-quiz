@@ -1,0 +1,58 @@
+// Prisma Schema for CSV Quiz Upload
+// Database: SQLite for MVP (easily migrate to PostgreSQL later)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Question entity - stores quiz questions in global pool
+model Question {
+  id            Int            @id @default(autoincrement())
+  questionText  String         @unique @map("question_text")
+  answers       AnswerOption[]
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  @@index([createdAt])
+  @@map("questions")
+}
+
+// AnswerOption entity - stores 4 answer options (a,b,c,d) per question
+model AnswerOption {
+  id          Int      @id @default(autoincrement())
+  questionId  Int      @map("question_id")
+  optionLabel String   @map("option_label")
+  answerText  String   @map("answer_text")
+  isCorrect   Boolean  @default(false) @map("is_correct")
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([questionId, optionLabel])
+  @@index([questionId])
+  @@map("answer_options")
+}
+
+// CSVUpload entity - tracks upload operations for auditing
+model CSVUpload {
+  id                 Int       @id @default(autoincrement())
+  filename           String
+  fileSize           Int       @map("file_size")
+  totalRows          Int       @default(0) @map("total_rows")
+  successfulImports  Int       @default(0) @map("successful_imports")
+  failedImports      Int       @default(0) @map("failed_imports")
+  duplicateCount     Int       @default(0) @map("duplicate_count")
+  status             String
+  errorSummary       String?   @map("error_summary")
+  uploadedAt         DateTime  @default(now()) @map("uploaded_at")
+  completedAt        DateTime? @map("completed_at")
+
+  @@index([uploadedAt])
+  @@index([status])
+  @@map("csv_uploads")
+}

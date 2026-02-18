@@ -1,0 +1,6 @@
+question,answer_a,answer_b,answer_c,answer_d,correct
+"What is the formula for photosynthesis?","6CO2 + 6H2O → C6H12O6 + 6O2","C6H12O6 + 6O2 → 6CO2 + 6H2O","H2O → H2 + O2","CO2 → C + O2",a
+"Which programming language is known for ""Write Once, Run Anywhere""?",Python,Java,C++,JavaScript,b
+"What is 10,000 + 25,000?","15,000","25,000","35,000","45,000",c
+Who said 'I think therefore I am'?,Socrates,Plato,René Descartes,Aristotle,c
+What does HTTP stand for?,HyperText Transfer Protocol,High-Level Text Protocol,Hyperlink Transfer Text Protocol,Host Transfer Protocol,a
